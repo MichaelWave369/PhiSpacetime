@@ -1,0 +1,11 @@
+# R1g: finite absorbing-boundary approximation
+
+R1f showed second-order convergence for a nonradial manufactured solution and full transformation exterior error .0000154547 versus .00100732 for density-only at n=72, t=.35. See https://github.com/MichaelWave369/PhiSpacetime/actions/runs/45922137547. No physical invisibility claim.
+
+The original Q1 FEM now also assembles a nonperiodic square with n nodes per direction, n-1 elements, configurable origin and length. Default periodic behavior remains unchanged. Fixed-zero outer nodes terminate the finite domain. The scalar evolution is M u_tt + M sigma u_t + K u = 0 with diagonal nonnegative damping sigma, using a centered time derivative for damping and a second-order startup. Cubic sponge profiles are zero beyond width .18 from the wall, peak 35 by default. The half-step leapfrog energy difference equals minus dt times the mass-weighted squared centered velocity times sigma. Report cumulative dissipation and residual, from the first half-step (startup is excluded from the balance). This is not PML or a perfectly absorbing condition.
+
+Verification: nonperiodic topology, mass integral, stiffness symmetry and constant null mode; profile validation; monotone discrete energy with normalized balance residual below 1e-10; reject unsafe step. Compare a centered compact pulse in [0,1]^2 against the same discretization in [-.5,1.5]^2 at matched h and dt, observing [.3,.7]^2 at t=.95. Normalize return error by initial pulse probe norm, not the potentially tiny late reference. At n=25 the default sponge must improve return error against the reflecting wall. Report resolution, layer width, strength and half-dt variations without ranking gates for other cases. The larger reference is finite and not exact free space; numerical propagation may precede continuum wavefronts.
+
+Also compare vacuum, nonradial full transformation and density-only with the same sponge, time steps and exterior probes. The sponge is outside the map support and identical for all cases. This does not independently validate an obstacle cloak or a scattering cross section. Report all results.
+
+Run python -m phispacetime.absorbing_benchmark. Next: controlled adaptive mesh work on identical scalar PDE and analytic error metrics (R2), with separate open-boundary refinement as needed. No NBG upstream code has been imported.
