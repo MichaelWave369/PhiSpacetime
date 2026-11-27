@@ -1,0 +1,22 @@
+name: R1d fitted annulus checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  annular:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -v
+      - run: |
+          set -o pipefail
+          python -m phispacetime.annular_benchmark | tee r1d-annular-results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r1d-annular-results
+          path: r1d-annular-results.json
