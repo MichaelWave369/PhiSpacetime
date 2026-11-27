@@ -24,11 +24,19 @@ def mesh(n, inner=.12, interface=.22, outer=.45, epsilon=.04):
     return virtual,physical,ann
 
 
-def assemble_annulus(n,case):
+def assemble_annulus(n,case,radial_nodes=None):
     virtual,physical,ann=mesh(n)
     if case not in ("virtual","transformed","bare"):
         raise ValueError("unknown case")
     radii=virtual if case=="virtual" else physical
+    if radial_nodes is not None:
+        radii=list(radial_nodes)
+        expected=virtual if case=="virtual" else physical
+        if (len(radii)!=n or not all(math.isfinite(v) for v in radii)
+                or any(a>=b for a,b in zip(radii,radii[1:]))
+                or abs(radii[0]-expected[0])>1e-14 or abs(radii[-1]-expected[-1])>1e-14
+                or not any(abs(v-ann.outer)<1e-14 for v in radii)):
+            raise ValueError("invalid fitted radial nodes")
     mass=[0.]*(n*n)
     rows=[{} for _ in mass]
     dtheta=2*math.pi/n
@@ -64,11 +72,13 @@ def boundary_mask(n):
     return [i==0 or i==n-1 for i in range(n) for _ in range(n)]
 
 
-def harmonic(n,case):
+def harmonic(n,case,radial_nodes=None,phase=0.,mode=1):
     """Solve the static Dirichlet problem by CG; exact virtual m=1 mode."""
-    op,radii=assemble_annulus(n,case)
+    op,radii=assemble_annulus(n,case,radial_nodes)
+    if not isinstance(mode,int) or mode<1 or mode>=n/2 or not math.isfinite(phase):
+        raise ValueError("invalid harmonic mode or phase")
     mask=boundary_mask(n)
-    boundary=[math.cos(2*math.pi*j/n) if i==n-1 else 0.
+    boundary=[math.cos(mode*(2*math.pi*j/n+phase)) if i==n-1 else 0.
               for i in range(n) for j in range(n)]
     rhs=[-v if not m else 0. for v,m in zip(op.apply(boundary),mask)]
     def apply(x):
@@ -96,11 +106,11 @@ def harmonic(n,case):
     if rr>target:
         raise RuntimeError("CG failed to converge")
     field=[a+b for a,b in zip(x,boundary)]
-    vr,_,_=mesh(n)
-    reference_radii=radii if case=="bare" else vr
+    _,_,ann=mesh(n)
+    reference_radii=[ann.inverse(r) for r in radii] if case=="transformed" else radii
     e=reference_radii[0]
     L=reference_radii[-1]
-    exact=[(r-e*e/r)/(L-e*e/L)*math.cos(2*math.pi*j/n)
+    exact=[((r/L)**mode-(e*e/(r*L))**mode)/(1-(e/L)**(2*mode))*math.cos(mode*(2*math.pi*j/n+phase))
            for r in reference_radii for j in range(n)]
     residual_actual=math.sqrt(dot([a-b for a,b in zip(rhs,apply(x))],
                                   [a-b for a,b in zip(rhs,apply(x))]))
