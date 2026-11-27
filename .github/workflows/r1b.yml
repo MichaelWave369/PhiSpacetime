@@ -1,0 +1,20 @@
+name: R1b transformed medium checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  medium:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -v
+      - run: python -m phispacetime.medium_benchmark | tee r1b-medium-results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r1b-medium-results
+          path: r1b-medium-results.json
