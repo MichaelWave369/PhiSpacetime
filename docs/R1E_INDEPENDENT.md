@@ -1,0 +1,9 @@
+# R1e: independent grids and interface observation
+
+R1d paired-mesh exterior agreement was about 1e-15 (see https://github.com/MichaelWave369/PhiSpacetime/actions/runs/45920379308). This is expected discrete coordinate covariance, not an independent performance result.
+
+R1e keeps exact polar circular interfaces but changes the physical radial distribution independently (power 1.2 inside, 1.1 outside) and rotates the angular lattice by pi/(3n). The virtual grid retains linear spacing. Bare and transformed use the identical physical grid. All fields are interpolated to 259 fixed, off-node physical exterior probes, with periodic angular bilinear interpolation. Static analytic references support azimuthal modes 1 and 2. Wave initial data is supported outside the transformation, with common time steps. Compare relative L2 exterior fields against the virtual obstacle; report unfavorable cases. Static one-sided secant flux estimates at R=.22 are compared with the analytic normal flux; these are first-order reconstructions, not assembled weak fluxes.
+
+Verification: mesh validation, interpolation exact for affine radial functions and periodic angles, analytic mode 2 error < .01, static residual < 1e-9, common time steps and energy drift < 1e-10, static refinement improvement, transformed static probe error < .01 at n=33. No required wave-error ranking.
+
+Sweep n=17,33,65; mode 2, half time step and later observation at n=33. Run python -m phispacetime.independent_benchmark. The meshes are independent in node placement but use the same polar FEM implementation and prescribed circular transform. This is not independent replication by another solver. Finite reflecting boundaries, interpolation error, common-probe sampling and radial symmetry remain limitations. Nonradial and open-domain verification and controlled adaptive mesh comparison remain separate next milestones. No existing NBG or Altermath repository is imported.
