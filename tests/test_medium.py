@@ -28,10 +28,10 @@ class MediumTests(unittest.TestCase):
         for variable in (False,True):
             a,b,c=[manufactured(n,variable) for n in (16,32,64)]
             for p,q in ((a,b),(b,c)):
-                order=math.log2(p["relative_l2"]/q["relative_l2"])
+                order=math.log2(p["amplitude_normalized_l2"]/q["amplitude_normalized_l2"])
                 self.assertGreater(order,1.7)
                 self.assertLess(order,2.3)
-            self.assertLess(c["relative_l2"],.01)
+            self.assertLess(c["amplitude_normalized_l2"],.01)
             self.assertLess(c["relative_energy_drift"],1e-11)
 
     def test_transform(self):

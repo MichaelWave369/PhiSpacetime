@@ -9,7 +9,7 @@ For x=F(X), with J=dx/dX and virtual coefficients equal to unity, the weak-form 
 - Matrix symmetry, zero row sum, positive mass and known integral of density.
 - Reject non-SPD tensors and nonpositive or nonfinite density.
 - Constant field and stable time step.
-- Two analytic periodic solutions: constant off-diagonal anisotropy and transversely varying mass with Axx=rho(y). Resolutions 16,32,64. Observed relative L2 order in [1.7,2.3], finest error below .01 and discrete energy drift below 1e-11.
+- Two analytic periodic solutions: constant off-diagonal anisotropy and transversely varying mass with Axx=rho(y). Resolutions 16,32,64. Observed initial-amplitude-normalized L2 error order in [1.7,2.3], finest error below .01 and discrete energy drift below 1e-11. The anisotropic standing mode at t=.13 is near a zero crossing; normalizing error by the initial mode norm avoids an ill-conditioned instantaneous denominator. Both error measures are reported; the original instantaneous relative criterion failed and is not a robust amplitude accuracy metric at this time.
 - Radial coefficient rotation, determinant and exterior identity.
 - Finite-time exterior comparisons against vacuum for bare disk, transformed disk, density-only negative control and smaller virtual disk; energy and fixed-node checks. No required ranking among the controls.
 

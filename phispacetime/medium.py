@@ -143,7 +143,9 @@ def manufactured(n, variable=False, end=.13):
     op=assemble(n,material)
     out,info=evolve(op,init,[0.]*(n*n),end)
     exact=[u*math.cos(omega*end) for u in init]
-    return dict(n=n,relative_l2=relative_l2(out,exact),**info)
+    return dict(n=n,amplitude_normalized_l2=math.sqrt(
+        math.fsum((a-b)**2 for a,b in zip(out,exact))/math.fsum(u*u for u in init)),
+        instantaneous_relative_l2=relative_l2(out,exact),**info)
 
 
 def experiment(n=48,end=.27):

@@ -9,7 +9,7 @@ def benchmark():
     for label,variable in (("constant_anisotropy",False),("variable_density",True)):
         rows=[manufactured(n,variable) for n in (16,32,64)]
         results[label]=dict(rows=rows,orders=[
-            math.log2(a["relative_l2"]/b["relative_l2"]) for a,b in zip(rows,rows[1:])])
+            math.log2(a["amplitude_normalized_l2"]/b["amplitude_normalized_l2"]) for a,b in zip(rows,rows[1:])])
     return dict(scope="scalar periodic finite elements; exploratory, not Maxwell or physical cloaking",
                 verification=results,experiment=experiment())
 
