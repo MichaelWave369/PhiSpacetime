@@ -52,22 +52,25 @@ class Operator:
         return 2/math.sqrt(bound)
 
 
-def assemble(n, material=vacuum):
+def assemble(n, material=vacuum, *, periodic=True, length=1., origin=(0.,0.)):
     if not isinstance(n,int) or n < 4:
         raise ValueError("n must be an integer >= 4")
-    h=1/n
+    if not math.isfinite(length) or length<=0 or len(origin)!=2 or not all(map(math.isfinite,origin)):
+        raise ValueError("invalid domain")
+    cells=n if periodic else n-1
+    h=length/cells
     rows=[{} for _ in range(n*n)]
     mass=[0.]*(n*n)
     g=1/math.sqrt(3)
     signs=((-1,-1),(1,-1),(1,1),(-1,1))
-    for iy in range(n):
-        for ix in range(n):
+    for iy in range(cells):
+        for ix in range(cells):
             ids=[iy*n+ix,iy*n+(ix+1)%n,
                  ((iy+1)%n)*n+(ix+1)%n,((iy+1)%n)*n+ix]
             for xi in (-g,g):
                 for eta in (-g,g):
-                    x=(ix+(xi+1)/2)*h
-                    y=(iy+(eta+1)/2)*h
+                    x=origin[0]+(ix+(xi+1)/2)*h
+                    y=origin[1]+(iy+(eta+1)/2)*h
                     ax,b,ay,rho=material(x,y)
                     if (not all(math.isfinite(v) for v in (ax,b,ay,rho))
                             or ax<=0 or ay<=0 or ax*ay-b*b<=0 or rho<=0):
