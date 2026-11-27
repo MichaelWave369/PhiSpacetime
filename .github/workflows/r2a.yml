@@ -1,0 +1,22 @@
+name: R2a pocket FEM checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  pockets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest discover -s tests -v
+      - run: |
+          set -o pipefail
+          python -m phispacetime.pocket_benchmark | tee r2a-pocket-results.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r2a-pocket-results
+          path: r2a-pocket-results.json
